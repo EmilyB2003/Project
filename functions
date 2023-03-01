@@ -1,1 +1,21 @@
-
+@torch.no_grad()  #need to understand
+def evaluate(x, y, model, epoch, treshold):
+    model.eval()
+    probabilities = []
+    tresh = treshold 
+    for batch in zero.iter_batches(x, 1024):
+        probabilities.append(model(batch))
+    
+    probabilities = torch.cat(probabilities).squeeze(1).cpu().numpy()
+    target = y.cpu().numpy()
+    #prediction = np.round(scipy.special.expit(probabilities))
+    prediction = [1 if temp>tresh else 0 for temp in scipy.special.expit(probabilities)]
+    #if epoch==200:
+      #print(scipy.special.expit(probabilities))
+    accuracy = accuracy_score(target, prediction)
+    f1 = f1_score(target, prediction)
+    auc = roc_auc_score(target, probabilities)
+    recall=recall_score(target, prediction)
+    precision=precision_score(target, prediction)
+    
+    return accuracy, f1, auc, recall, precision
